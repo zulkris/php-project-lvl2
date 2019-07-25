@@ -1,0 +1,21 @@
+{
+    "name": "zulkris/project2",
+    "description": "hexlet 2nd project",
+    "type": "project",
+    "require": {
+        "docopt/docopt": "^1.0"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.4"
+    },
+    "license": "MIT",
+    "scripts": {
+    	"phpcs" : "phpcs"
+    },
+    "authors": [
+        {
+            "name": "Zakhar Steblovskii",
+            "email": "2garin.zmej@gmail.com"
+        }
+    ]
+}
