@@ -1,6 +1,8 @@
 <?php
 
-$doc = <<<DOC
+namespace Gendiff\Cli;
+
+const DESCRIPTION = <<<DOC
 
 Generate diff
 

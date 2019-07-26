@@ -2,10 +2,10 @@
 
 namespace Gendiff\Cli;
 
-function doIt($doc, $config)
+function doIt()
 {
-    $args = \Docopt::handle($doc);
-    handle($args, $doc, $config);
+    $args = \Docopt::handle(DESCRIPTION);
+    handle($args, DESCRIPTION, $config);
 }
 
 function handle($args, $doc, $config)
