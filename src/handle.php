@@ -2,12 +2,13 @@
 
 namespace Gendiff\Cli;
 
-function handle($args)
+require_once('config.php');
+
+function handle($args, $doc) use ($config)
 {
-    switch ($args)
-    {
-        case '-h':
-        case '--help:
-        break;
+    foreach ($args as $key => $value) {
+        if ($value == true) {
+            echo $config[$key]($doc);
+        }
     }
 }
