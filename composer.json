@@ -12,6 +12,14 @@
     "scripts": {
     	"phpcs" : "phpcs"
     },
+    "bin" : [
+    	"bin/gendiff"
+    ],
+    "autoload" : {
+    	"files" : [
+	    "src/handle.php"
+	]
+    },
     "authors": [
         {
             "name": "Zakhar Steblovskii",

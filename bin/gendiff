@@ -1,6 +1,10 @@
 #!/usr/bin/env php
 <?php
 
+namespace Gendiff;
+
+use function Gendiff/Cli/handle;
+
 require_once(__DIR__ . '/../vendor/autoload.php');
 
 $doc = <<<DOC
