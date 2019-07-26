@@ -2,13 +2,17 @@
 
 namespace Gendiff\Cli;
 
-require_once('config.php');
-
-function handle($args, $doc) use ($config)
+function doIt($doc, $config)
 {
-    foreach ($args as $key => $value) {
+    $args = \Docopt::handle($doc);
+    handle($args, $doc, $config);
+}
+
+function handle($args, $doc, $config)
+{
+    foreach ($args as $arg => $value) {
         if ($value == true) {
-            echo $config[$key]($doc);
+            echo $config($arg, $doc);
         }
     }
 }

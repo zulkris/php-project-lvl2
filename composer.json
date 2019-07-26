@@ -17,8 +17,9 @@
     ],
     "autoload" : {
     	"files" : [
-	    "src/handle.php"
-	]
+	        "src/handle.php",
+            "src/config.php"
+        ]
     },
     "authors": [
         {
