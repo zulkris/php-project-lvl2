@@ -21,7 +21,6 @@ function handle($args)
     $format = isset($args['--format']) ? isset($args['--format']) : null;
 
     if (isset($args["<firstFile>"]) && isset($args["<firstFile>"])) {
-
         $file1 = file_get_contents(getcwd() . "/" . $args["<firstFile>"]);
         $file2 = file_get_contents(getcwd() . "/" . $args["<secondFile>"]);
         $diff = genDiff($file1, $file2);
