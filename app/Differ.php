@@ -2,17 +2,10 @@
 
 namespace Differ;
 
-function genDiff($path1, $path2)
-{
-	$differ = new Differ($path1, $path2);
-	return $differ->compare()->toString();
-
-}
-
 class Differ
 {
-	private $file1;
-	private $file2;
+	private $json1;
+	private $json2;
 
 	private $result;
 
@@ -26,18 +19,20 @@ class Differ
 	 * @param $path1
 	 * @param $path2
 	 */
-	public function __construct($path1, $path2)
+	public function __construct($text1, $text2)
 	{
-		$this->file1 = json_decode($path1, true);
-		$this->file2 = json_decode($path2, true);
+		$this->json1 = json_decode($text1, true);
+		$this->json2 = json_decode($text2, true);
 	}
 	public function compare()
 	{
-		$allKeys = array_keys(array_merge($this->file1, $this->file2));
+	    //var_dump($this->json1, $this->json2); exit;
+
+		$allKeys = array_keys(array_merge($this->json1, $this->json2));
 
 		$this->result = array_reduce($allKeys, function($acc, $key) {
-			$a1 = $this->file1;
-			$a2 = $this->file2;
+			$a1 = $this->json1;
+			$a2 = $this->json2;
 			if (isset($a1[$key]) && isset($a2[$key]) && $a1[$key] === $a2[$key]) {
 				$acc[$key] = [
 					"type" => 1,

@@ -20,8 +20,11 @@ function handle($args)
 {
     $format = isset($args['--format']) ? isset($args['--format']) : null;
 
-    if (isset($args['<firstFile>']) && isset($args['<secondFile>'])) {
-        $diff = genDiff($args['<firstFile>'], $args['<secondFile>']);
+    if (isset($args["<firstFile>"]) && isset($args["<firstFile>"])) {
+
+        $file1 = file_get_contents(getcwd() . "/" . $args["<firstFile>"]);
+        $file2 = file_get_contents(getcwd() . "/" . $args["<secondFile>"]);
+        $diff = genDiff($file1, $file2);
         print($diff);
         return;
     }
@@ -30,7 +33,7 @@ function handle($args)
 function doIt()
 {
     $args = \Docopt::handle(DESCRIPTION);
-    if ($args['--help'] == true || $args['-h'] == true) {
+    if ((isset($args['--help']) && $args['--help'] == true) || (isset($args['-h']) && $args['-h'] == true)) {
         echo DESCRIPTION;
         return;
     }
