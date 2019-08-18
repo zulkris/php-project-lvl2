@@ -21,9 +21,10 @@ function handle($args)
     $format = isset($args['--format']) ? isset($args['--format']) : null;
 
     if (isset($args["<firstFile>"]) && isset($args["<firstFile>"])) {
-        $file1 = file_get_contents(realpath($args["<firstFile>"]));
-        $file2 = file_get_contents(realpath($args["<secondFile>"]));
-        $diff = genDiff($file1, $file2);
+        $path_file1 = realpath($args["<firstFile>"]);
+        $path_file2 = realpath($args["<secondFile>"]);
+
+        $diff = genDiff($path_file1, $path_file2);
         print($diff);
         return;
     }

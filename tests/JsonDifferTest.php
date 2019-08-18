@@ -1,17 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zulkris
- * Date: 8/16/19
- * Time: 8:39 PM
- */
 
 use PHPUnit\Framework\TestCase;
-use Differ\Differ;
+use Differ\JsonDiffer;
 
-class DifferTest extends TestCase
+class JsonDifferTest extends TestCase
 {
-	public function fileProvider()
+	public function dataProvider()
 	{
 		$json1 =  file_get_contents(__DIR__ . '/example-files/json1.json' );
 		$json2 =  file_get_contents(__DIR__ . '/example-files/json2.json' );
@@ -91,11 +85,11 @@ class DifferTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider fileProvider
+	 * @dataProvider dataProvider
 	 */
 	public function testCompare($json1, $json2, $expected)
 	{
-		$differ = new Differ($json1, $json2);
+		$differ = new JsonDiffer($json1, $json2);
 
 		$this->assertEquals($expected, $differ->compare()->toArray());
 	}
@@ -104,7 +98,7 @@ class DifferTest extends TestCase
 	{
 		$jsonhex1 = file_get_contents(__DIR__ . '/example-files/json_hex1.json');
 		$jsonhex2 = file_get_contents(__DIR__ . '/example-files/json_hex2.json');
-		$differ = new Differ($jsonhex1, $jsonhex2);
+		$differ = new JsonDiffer($jsonhex1, $jsonhex2);
 
 		$output = file_get_contents(__DIR__ . '/example-files/string_hex.txt');
 
