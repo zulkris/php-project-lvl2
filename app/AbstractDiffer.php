@@ -16,6 +16,8 @@ class AbstractDiffer
 
     public function compare()
     {
+        //var_dump($this->content1);die();
+
         $allKeys = array_keys(array_merge($this->content1, $this->content2));
         $this->result = array_reduce($allKeys, function($acc, $key) {
             $a1 = $this->content1;

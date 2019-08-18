@@ -2,7 +2,6 @@
 
 use Differ\YamlDiffer;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Yaml\Yaml;
 
 class YamlDifferTest extends TestCase
 {
