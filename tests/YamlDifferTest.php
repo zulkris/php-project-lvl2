@@ -9,8 +9,8 @@ class YamlDifferTest extends TestCase
 
     public function dataProvider()
     {
-        $data1 = file_get_contents('example-files/yaml1.yml');
-        $data2 = file_get_contents('example-files/yaml2.yml');
+        $data1 = file_get_contents(__DIR__ . '/example-files/yaml1.yml');
+        $data2 = file_get_contents(__DIR__ . '/example-files/yaml2.yml');
 
         $expected =  [
             "id" => [
