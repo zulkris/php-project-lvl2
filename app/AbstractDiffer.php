@@ -2,55 +2,122 @@
 
 namespace Differ;
 
-class AbstractDiffer
+abstract class AbstractDiffer
 {
-    protected $content1;
-    protected $content2;
-
     protected $result;
 
     const SAME = 1;
     const CHANGED = 2;
-    const DELETED = 3;
-    const ADDED = 4;
+    const ADDED = 3;
+    const DELETED = 4;
+    const CHILDREN = 5;
 
-    public function compare()
+    abstract public function __construct($before, $after);
+
+    private function array_merge_recursive_ex(array $array1, array $array2)
     {
-        //var_dump($this->content1);die();
+        $merged = $array1;
 
-        $allKeys = array_keys(array_merge($this->content1, $this->content2));
-        $this->result = array_reduce($allKeys, function($acc, $key) {
-            $a1 = $this->content1;
-            $a2 = $this->content2;
-            if (isset($a1[$key]) && isset($a2[$key]) && $a1[$key] === $a2[$key]) {
-                $acc[$key] = [
-                    "type" => 1,
-                    "value" => is_bool($a1[$key]) ? json_encode($a1[$key]) : $a1[$key]
-                ];
-                return $acc;
+        foreach ($array2 as $key => & $value) {
+            if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
+                $merged[$key] = $this->array_merge_recursive_ex($merged[$key], $value);
+            } else if (is_numeric($key)) {
+                if (!in_array($value, $merged)) {
+                    $merged[] = $value;
+                }
+            } else {
+                $merged[$key] = $value;
             }
-            if (isset($a1[$key]) && isset($a2[$key])) {
-                $acc[$key] = [
-                    "type" => 2,
-                    "old" => is_bool($a1[$key]) ? json_encode($a1[$key]) : $a1[$key],
-                    "new" => is_bool($a2[$key]) ? json_encode($a2[$key]) : $a2[$key]
-                ];
-                return $acc;
+        }
+
+        return $merged;
+    }
+
+    public function compare(array $before, array $after): AbstractDiffer
+    {
+        $transitional = $this->array_merge_recursive_ex($before, $after);
+
+        $my_array_reduce = function ($c, $a, $b, callable $callable) use (&$my_array_reduce) {
+            $res = [];
+            foreach ($c as $key => $value) {
+                if (is_array($c[$key])) {
+
+                    if (isset($a[$key]) &&
+                        is_array($a[$key]) &&
+                        isset($b[$key]) &&
+                        is_array($b[$key]) &&
+                        $a[$key] !== $b[$key]) {
+
+                        $res[] = [
+                            "key" => $key,
+                            "type" => self::CHILDREN,
+                            "value" => $my_array_reduce($c[$key], $a[$key] ,$b[$key], $callable)
+                        ];
+
+                    } elseif (isset($a[$key]) &&
+                        is_array($a[$key]) &&
+                        !isset($b[$key]) ) {
+                        $res[] = [
+                            "key" => $key,
+                            "type" => self::DELETED,
+                            "value" => $a[$key]
+                        ];
+                    } elseif (!isset($a[$key]) &&
+                        isset($b[$key]) &&
+                        is_array($b[$key])) {
+                        $res[] = [
+                            "key" => $key,
+                            "type" => self::ADDED,
+                            "value" => $b[$key]
+                        ];
+                    }
+
+                } else {
+                    $res[] = array_merge(
+                        ["key" => $key],
+                        $callable(
+                            isset($a[$key]) ? $a[$key] : null,
+                            isset($b[$key]) ? $b[$key] : null
+                        )
+                    );
+                }
             }
-            if (isset($a1[$key]) && !isset($a2[$key])) {
-                $acc[$key] = [
-                    "type" => 3,
-                    "value" => is_bool($a1[$key]) ? json_encode($a1[$key]) : $a1[$key]
+            return $res;
+        };
+
+        $compareVariablesFunction = function($a, $b) {
+            if (!empty($a) && !empty($b) && $a === $b) {
+                return [
+                    "type" => self::SAME,
+                    "value" => $a
                 ];
             }
-            if (!isset($a1[$key]) && isset($a2[$key])) {
-                $acc[$key] = [
-                    "type" => 4,
-                    "value" => is_bool($a2[$key]) ? json_encode($a2[$key]) : $a2[$key]
+            if (!empty($a) && !empty($b) && $b !== $a) {
+                return [
+                    "type" => self::CHANGED,
+                    "old" => $a,
+                    "new" => $b
                 ];
             }
-            return $acc;
-        }, []);
+            if (!empty($a) && empty($b)) {
+                return [
+                    "type" => self::DELETED,
+                    "value" => $a
+                ];
+            }
+            if (empty($a) && !empty($b)) {
+                return [
+                    "type" => self::ADDED,
+                    "value" => $b
+                ];
+            }
+        };
+
+        $this->result = $my_array_reduce(
+            $transitional,
+            $before,
+            $after,
+            $compareVariablesFunction);
 
         return $this;
     }
@@ -59,29 +126,38 @@ class AbstractDiffer
     {
         return $this->result;
     }
+
+    private function toRightView($value)
+    {
+        return is_bool($value) ? json_encode($value) : $value;
+    }
+
     public function toString()
     {
-        $result = $this->result;
-        $strings = array_map(function ($key) use ($result) {
-            switch ($result[$key]['type']) {
-                case 1:
-                    return "    {$key}: {$result[$key]['value']}";
+        //var_dump($this->result);
+        $convertFunc = function ($item) use (&$convertFunc){
+            switch ($item['type']) {
+                case self::SAME:
+                    return "    {$item['key']}: " . $this->toRightView($item['value']);
                     break;
-                case 2:
-                    return "  + {$key}: {$result[$key]['new']}" . PHP_EOL . "  - {$key}: {$result[$key]['old']}";
+                case self::CHANGED:
+                    return "  + {$item['key']}: " . $this->toRightView($item['new']) . PHP_EOL .
+                           "  - {$item['key']}: " . $this->toRightView($item['old']);
                     break;
-                case 3:
-                    return "  - {$key}: {$result[$key]['value']}";
+                case self::ADDED:
+                    return "  + {$item['key']}: " . $this->toRightView($item['value']);
                     break;
-                case 4:
-                    return "  + {$key}: {$result[$key]['value']}";
+                case self::DELETED:
+                    return "  - {$item['key']}: " . $this->toRightView($item['value']);
                     break;
-            }
-            return false; //unexpected
-        }, array_keys($this->result));
+                case self::CHILDREN:
+                    return "    {$item['key']}: {$convertFunc($item)}";
+                    break;
 
-        return "{" . PHP_EOL .
-            implode(PHP_EOL, $strings) .
-            PHP_EOL . "}";
+            }
+        };
+
+        $strings = implode(PHP_EOL, array_map($convertFunc ,$this->result));
+        return "{" . PHP_EOL . $strings . PHP_EOL . "}";
     }
 }

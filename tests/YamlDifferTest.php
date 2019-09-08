@@ -8,25 +8,29 @@ class YamlDifferTest extends TestCase
 
     public function dataProvider()
     {
-        $data1 = file_get_contents(__DIR__ . '/example-files/yaml1.yml');
-        $data2 = file_get_contents(__DIR__ . '/example-files/yaml2.yml');
+        $data1 = file_get_contents(__DIR__ . '/example-files/noscale/yaml1.yml');
+        $data2 = file_get_contents(__DIR__ . '/example-files/noscale/yaml2.yml');
 
         $expected =  [
-            "id" => [
+            0 => [
+                "key" => "id",
                 "type" => 1,
                 "value" => 1
             ],
-            "name" => [
+            1 => [
+                "key" => "name",
                 "type" => 2,
                 "old" => "John Smith",
                 "new" => "John Smither"
             ],
-            "position" => [
-                "type" => 3,
+            2 => [
+                "key" => "position",
+                "type" => \Differ\AbstractDiffer::DELETED,
                 "value" => "developer",
             ],
-            "age" => [
-                "type" => 4,
+            3 => [
+                "key" => "age",
+                "type" => \Differ\AbstractDiffer::ADDED,
                 "value" => 33,
             ]
         ];
@@ -42,6 +46,6 @@ class YamlDifferTest extends TestCase
     public function testToArray($data1, $data2, $expected)
     {
         $differ = new YamlDiffer($data1, $data2);
-        $this->assertEquals($expected, $differ->compare()->toArray());
+        $this->assertEquals($expected, $differ->toArray());
     }
 }

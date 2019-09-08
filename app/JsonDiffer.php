@@ -9,9 +9,11 @@ class JsonDiffer extends AbstractDiffer
 	 * @param $path1
 	 * @param $path2
 	 */
-	public function __construct($content_file1, $content_file2)
+	public function __construct($before, $after)
     {
-        $this->content1 = json_decode($content_file1, true);
-        $this->content2 = json_decode($content_file2, true);
+        $this->compare(
+            json_decode($before, true),
+            json_decode($after, true)
+        );
     }
 }
