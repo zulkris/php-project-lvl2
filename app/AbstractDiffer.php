@@ -84,7 +84,7 @@ abstract class AbstractDiffer
             return $res;
         };
 
-        $compareVariablesFunction = function ($a, $b) {
+        $compareVariables = function ($a, $b) {
             if (!empty($a) && !empty($b) && $a === $b) {
                 $res = [
                     "type" => self::SAME,
@@ -117,7 +117,8 @@ abstract class AbstractDiffer
             $transitional,
             $before,
             $after,
-            $compareVariablesFunction);
+            $compareVariables
+        );
 
         return $this;
     }
@@ -134,7 +135,6 @@ abstract class AbstractDiffer
 
     public function toString()
     {
-        //var_dump($this->result);
         $convertFunc = function ($item) use (&$convertFunc) {
             switch ($item['type']) {
                 case self::SAME:
