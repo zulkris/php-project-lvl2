@@ -19,12 +19,10 @@ abstract class AbstractDiffer
         $merged = $array1;
 
         foreach ($array2 as $key => & $value) {
-            if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
+            if (is_array($value) &&
+                isset($merged[$key]) &&
+                is_array($merged[$key])) {
                 $merged[$key] = $this->array_merge_recursive_ex($merged[$key], $value);
-            } else if (is_numeric($key)) {
-                if (!in_array($value, $merged)) {
-                    $merged[] = $value;
-                }
             } else {
                 $merged[$key] = $value;
             }
@@ -32,6 +30,7 @@ abstract class AbstractDiffer
 
         return $merged;
     }
+
 
     public function compare(array $before, array $after): AbstractDiffer
     {
@@ -87,30 +86,31 @@ abstract class AbstractDiffer
 
         $compareVariablesFunction = function ($a, $b) {
             if (!empty($a) && !empty($b) && $a === $b) {
-                return [
+                $res = [
                     "type" => self::SAME,
                     "value" => $a
                 ];
             }
             if (!empty($a) && !empty($b) && $b !== $a) {
-                return [
+                $res = [
                     "type" => self::CHANGED,
                     "old" => $a,
                     "new" => $b
                 ];
             }
             if (!empty($a) && empty($b)) {
-                return [
+                $res = [
                     "type" => self::DELETED,
                     "value" => $a
                 ];
             }
             if (empty($a) && !empty($b)) {
-                return [
+                $res = [
                     "type" => self::ADDED,
                     "value" => $b
                 ];
             }
+            return $res;
         };
 
         $this->result = $my_array_reduce(
@@ -138,23 +138,23 @@ abstract class AbstractDiffer
         $convertFunc = function ($item) use (&$convertFunc) {
             switch ($item['type']) {
                 case self::SAME:
-                    return "    {$item['key']}: " . $this->toRightView($item['value']);
+                    $string = "    {$item['key']}: " . $this->toRightView($item['value']);
                     break;
                 case self::CHANGED:
-                    return "  + {$item['key']}: " . $this->toRightView($item['new']) . PHP_EOL .
+                    $string = "  + {$item['key']}: " . $this->toRightView($item['new']) . PHP_EOL .
                         "  - {$item['key']}: " . $this->toRightView($item['old']);
                     break;
                 case self::ADDED:
-                    return "  + {$item['key']}: " . $this->toRightView($item['value']);
+                    $string = "  + {$item['key']}: " . $this->toRightView($item['value']);
                     break;
                 case self::DELETED:
-                    return "  - {$item['key']}: " . $this->toRightView($item['value']);
+                    $string = "  - {$item['key']}: " . $this->toRightView($item['value']);
                     break;
                 case self::CHILDREN:
-                    return "    {$item['key']}: {$convertFunc($item)}";
+                    $string = "    {$item['key']}: {$convertFunc($item)}";
                     break;
-
             }
+            return $string;
         };
 
         $strings = implode(PHP_EOL, array_map($convertFunc, $this->result));
