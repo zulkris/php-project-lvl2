@@ -11,7 +11,7 @@ class YamlDifferTest extends TestCase
         $data1 = file_get_contents(__DIR__ . '/example-files/noscale/yaml1.yml');
         $data2 = file_get_contents(__DIR__ . '/example-files/noscale/yaml2.yml');
 
-        $expected =  [
+        $expected = [
             0 => [
                 "key" => "id",
                 "type" => 1,

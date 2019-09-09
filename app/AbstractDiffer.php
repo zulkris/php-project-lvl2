@@ -51,12 +51,12 @@ abstract class AbstractDiffer
                         $res[] = [
                             "key" => $key,
                             "type" => self::CHILDREN,
-                            "value" => $my_array_reduce($c[$key], $a[$key] ,$b[$key], $callable)
+                            "value" => $my_array_reduce($c[$key], $a[$key], $b[$key], $callable)
                         ];
 
                     } elseif (isset($a[$key]) &&
                         is_array($a[$key]) &&
-                        !isset($b[$key]) ) {
+                        !isset($b[$key])) {
                         $res[] = [
                             "key" => $key,
                             "type" => self::DELETED,
@@ -85,7 +85,7 @@ abstract class AbstractDiffer
             return $res;
         };
 
-        $compareVariablesFunction = function($a, $b) {
+        $compareVariablesFunction = function ($a, $b) {
             if (!empty($a) && !empty($b) && $a === $b) {
                 return [
                     "type" => self::SAME,
@@ -135,14 +135,14 @@ abstract class AbstractDiffer
     public function toString()
     {
         //var_dump($this->result);
-        $convertFunc = function ($item) use (&$convertFunc){
+        $convertFunc = function ($item) use (&$convertFunc) {
             switch ($item['type']) {
                 case self::SAME:
                     return "    {$item['key']}: " . $this->toRightView($item['value']);
                     break;
                 case self::CHANGED:
                     return "  + {$item['key']}: " . $this->toRightView($item['new']) . PHP_EOL .
-                           "  - {$item['key']}: " . $this->toRightView($item['old']);
+                        "  - {$item['key']}: " . $this->toRightView($item['old']);
                     break;
                 case self::ADDED:
                     return "  + {$item['key']}: " . $this->toRightView($item['value']);
@@ -157,7 +157,7 @@ abstract class AbstractDiffer
             }
         };
 
-        $strings = implode(PHP_EOL, array_map($convertFunc ,$this->result));
+        $strings = implode(PHP_EOL, array_map($convertFunc, $this->result));
         return "{" . PHP_EOL . $strings . PHP_EOL . "}";
     }
 }
