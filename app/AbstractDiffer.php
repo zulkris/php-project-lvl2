@@ -64,30 +64,25 @@ abstract class AbstractDiffer
             $res = [];
             foreach ($c as $key => $value) {
                 if (is_array($c[$key])) {
+
                     $type = $this->getTypeOfArray($a, $b, $key);
                     switch ($type) {
                         case self::CHILDREN:
-                            $res[] = [
-                                "key" => $key,
-                                "type" => self::CHILDREN,
-                                "value" => $my_array_reduce($c[$key], $a[$key], $b[$key], $callable)
-                            ];
+                            $value = $my_array_reduce($c[$key], $a[$key], $b[$key], $callable);
                             break;
                         case self::DELETED:
-                            $res[] = [
-                                "key" => $key,
-                                "type" => self::DELETED,
-                                "value" => $a[$key]
-                            ];
+                            $value = $a[$key];
                             break;
                         case self::ADDED:
-                            $res[] = [
-                                "key" => $key,
-                                "type" => self::ADDED,
-                                "value" => $b[$key]
-                            ];
+                            $value = $b[$key];
                             break;
                     }
+                    $res[] = [
+                        "key" => $key,
+                        "type" => $type,
+                        "value" => $value
+                    ];
+
                 } else {
                     $res[] = array_merge(
                         ["key" => $key],
