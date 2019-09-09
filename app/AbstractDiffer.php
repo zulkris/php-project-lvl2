@@ -31,6 +31,30 @@ abstract class AbstractDiffer
         return $merged;
     }
 
+    private function getTypeOfArray(array $a, array $b, $key)
+    {
+        if (isset($a[$key]) &&
+            is_array($a[$key]) &&
+            isset($b[$key]) &&
+            is_array($b[$key]) &&
+            $a[$key] !== $b[$key]) {
+
+            $type = self::CHILDREN;
+
+        } elseif (isset($a[$key]) &&
+            is_array($a[$key]) &&
+            !isset($b[$key])) {
+
+            $type = self::DELETED;
+
+        } elseif (!isset($a[$key]) &&
+            isset($b[$key]) &&
+            is_array($b[$key])) {
+
+            $type = self::ADDED;
+        }
+        return $type;
+    }
 
     public function compare(array $before, array $after): AbstractDiffer
     {
@@ -40,37 +64,30 @@ abstract class AbstractDiffer
             $res = [];
             foreach ($c as $key => $value) {
                 if (is_array($c[$key])) {
-
-                    if (isset($a[$key]) &&
-                        is_array($a[$key]) &&
-                        isset($b[$key]) &&
-                        is_array($b[$key]) &&
-                        $a[$key] !== $b[$key]) {
-
-                        $res[] = [
-                            "key" => $key,
-                            "type" => self::CHILDREN,
-                            "value" => $my_array_reduce($c[$key], $a[$key], $b[$key], $callable)
-                        ];
-
-                    } elseif (isset($a[$key]) &&
-                        is_array($a[$key]) &&
-                        !isset($b[$key])) {
-                        $res[] = [
-                            "key" => $key,
-                            "type" => self::DELETED,
-                            "value" => $a[$key]
-                        ];
-                    } elseif (!isset($a[$key]) &&
-                        isset($b[$key]) &&
-                        is_array($b[$key])) {
-                        $res[] = [
-                            "key" => $key,
-                            "type" => self::ADDED,
-                            "value" => $b[$key]
-                        ];
+                    $type = $this->getTypeOfArray($a, $b, $key);
+                    switch ($type) {
+                        case self::CHILDREN:
+                            $res[] = [
+                                "key" => $key,
+                                "type" => self::CHILDREN,
+                                "value" => $my_array_reduce($c[$key], $a[$key], $b[$key], $callable)
+                            ];
+                            break;
+                        case self::DELETED:
+                            $res[] = [
+                                "key" => $key,
+                                "type" => self::DELETED,
+                                "value" => $a[$key]
+                            ];
+                            break;
+                        case self::ADDED:
+                            $res[] = [
+                                "key" => $key,
+                                "type" => self::ADDED,
+                                "value" => $b[$key]
+                            ];
+                            break;
                     }
-
                 } else {
                     $res[] = array_merge(
                         ["key" => $key],
