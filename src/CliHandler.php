@@ -9,9 +9,11 @@ use JsonException;
 
 class CliHandler
 {
-    private Handler $handler;
-    private string  $configFile =
-<<<'STR'
+    private Handler       $handler;
+    private DiffEvaluator $diffEvaluator;
+
+    private string $configFile =
+        <<<'STR'
 Generate diff
 
 Usage:
@@ -25,14 +27,15 @@ Options:
   --format <fmt>                Report format [default: stylish]
 STR;
 
-    private array $additionalConfigParams = [
+    private array $defaultParams = [
         'version' => '0.1.1',
         'format'  => 'stylish',
     ];
 
-    public function __construct(Handler $handler)
+    public function __construct(Handler $handler, DiffEvaluator $diffEvaluator)
     {
-        $this->handler = $handler;
+        $this->handler       = $handler;
+        $this->diffEvaluator = $diffEvaluator;
     }
 
     /**
@@ -41,11 +44,8 @@ STR;
      */
     public function handle(): string
     {
-        $this->handler->__construct($this->additionalConfigParams);
-
-        $args = $this->handler->handle(
-            $this->configFile,
-        );
+        $this->handler->__construct($this->defaultParams);
+        $args = $this->handler->handle($this->configFile);
 
         foreach ($args as $k => $v) {
             $res[] = $k . ': ' . json_encode($v, JSON_THROW_ON_ERROR);

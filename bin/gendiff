@@ -2,6 +2,7 @@
 <?php
 
 use App\CliHandler;
+use App\DiffEvaluator;
 use Docopt\Handler;
 use Pimple\Container;
 use Pimple\Psr11\Container as Psr11Container;
@@ -17,7 +18,8 @@ if (file_exists($autoloadPath1)) {
 
 $container  = new Container();
 $container['handler'] = static fn() => new Handler();
-$container['app']     = static fn($c) => new CliHandler($c['handler']);
+$container['evaluator'] = static fn() => new DiffEvaluator();
+$container['app']     = static fn($c) => new CliHandler($c['handler'], $c['evaluator']);
 $psr11container       = new Psr11Container($container);
 
 
