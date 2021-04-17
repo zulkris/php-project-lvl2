@@ -3,7 +3,8 @@
     "type": "project",
     "require": {
         "docopt/docopt": "^1.0",
-        "ext-json": "*"
+        "ext-json": "*",
+        "pimple/pimple": "^3.4"
     },
     "description": "hexlet php project two",
     "require-dev": {
