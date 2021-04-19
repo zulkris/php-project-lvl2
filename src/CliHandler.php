@@ -11,31 +11,35 @@ class CliHandler
 {
     private Handler       $handler;
     private DiffEvaluator $diffEvaluator;
+    private FileConverter $fileTypeDetector;
 
     private string $configFile =
         <<<'STR'
-Generate diff
+        Generate diff
+        
+        Usage:
+          gendiff (-h|--help)
+          gendiff (-v|--version)
+          gendiff [--format <fmt>] <firstFile> <secondFile>
+        
+        Options:
+          -h --help                     Show this screen
+          -v --version                  Show version
+          --format <fmt>                Report format [default: stylish]
+        STR;
 
-Usage:
-  gendiff (-h|--help)
-  gendiff (-v|--version)
-  gendiff [--format <fmt>] <firstFile> <secondFile>
-
-Options:
-  -h --help                     Show this screen
-  -v --version                  Show version
-  --format <fmt>                Report format [default: stylish]
-STR;
-
-    private array $defaultParams = [
+    private array         $defaultParams = [
         'version' => '0.1.1',
         'format'  => 'stylish',
     ];
 
-    public function __construct(Handler $handler, DiffEvaluator $diffEvaluator)
+    public function __construct(Handler $handler, DiffEvaluator $diffEvaluator, FileConverter $fileTypeDetector)
     {
         $this->handler       = $handler;
+        $this->handler->__construct($this->defaultParams);
+
         $this->diffEvaluator = $diffEvaluator;
+        $this->fileTypeDetector = $fileTypeDetector;
     }
 
     /**
@@ -44,7 +48,6 @@ STR;
      */
     public function handle(): string
     {
-        $this->handler->__construct($this->defaultParams);
         $args = $this->handler->handle($this->configFile);
 
         foreach ($args as $k => $v) {
