@@ -5,6 +5,7 @@ namespace App;
 
 use InvalidArgumentException;
 use RuntimeException;
+use SplFileInfo;
 
 class FileTypeDetector
 {
@@ -13,18 +14,20 @@ class FileTypeDetector
 
     public static function detect(string $fileName): string
     {
-        if (!is_file($fileName)) {
-            throw new InvalidArgumentException();
+        if (!file_exists($fileName)) {
+            throw new RuntimeException();
         }
 
-        switch ($fileName) {
+        $fileInfo = new SplFileInfo($fileName);
+
+        switch ($fileInfo->getExtension()) {
             case 'yml':
             case 'yaml':
                 return self::FILETYPE_YAML;
             case 'json':
                 return self::FILETYPE_JSON;
             default:
-                throw new RuntimeException('unexpected file type');
+                throw new InvalidArgumentException('unexpected file type');
         }
     }
 }

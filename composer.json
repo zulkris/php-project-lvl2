@@ -8,7 +8,8 @@
     },
     "description": "hexlet php project two",
     "require-dev": {
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "^9.0",
+        "mikey179/vfsstream": "^1.6"
     },
     "autoload": {
         "psr-4": {

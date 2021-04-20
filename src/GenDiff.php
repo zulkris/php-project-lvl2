@@ -7,7 +7,7 @@ use Docopt\Handler;
 use Docopt\LanguageError;
 use JsonException;
 
-class CliHandler
+class GenDiff
 {
     private Handler       $handler;
     private DiffEvaluator $diffEvaluator;
