@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace App\Application;
 
+use App\Domain\DiffEvaluator;
 use Docopt\Handler;
 use Docopt\LanguageError;
 use JsonException;
 
-class GenDiff
+class GenDiffCli
 {
     private Handler       $handler;
     private DiffEvaluator $diffEvaluator;
-    private FileConverter $fileTypeDetector;
 
     private string $configFile =
         <<<'STR'
@@ -25,21 +25,20 @@ class GenDiff
         Options:
           -h --help                     Show this screen
           -v --version                  Show version
-          --format <fmt>                Report format [default: stylish]
+          --format <fmt>                Report format [default: plain]
         STR;
 
     private array         $defaultParams = [
         'version' => '0.1.1',
-        'format'  => 'stylish',
+        'format'  => 'plain',
     ];
 
-    public function __construct(Handler $handler, DiffEvaluator $diffEvaluator, FileConverter $fileTypeDetector)
+    public function __construct(Handler $handler, DiffEvaluator $diffEvaluator)
     {
         $this->handler       = $handler;
         $this->handler->__construct($this->defaultParams);
 
         $this->diffEvaluator = $diffEvaluator;
-        $this->fileTypeDetector = $fileTypeDetector;
     }
 
     /**

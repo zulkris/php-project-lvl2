@@ -1,31 +1,28 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace App\Infrastructure;
 
 use InvalidArgumentException;
 use RuntimeException;
 use SplFileInfo;
 
-class FileTypeDetector
+class FileTypeDetector implements TypeDetectorInterface
 {
-    public const FILETYPE_YAML = 'yaml';
-    public const FILETYPE_JSON = 'json';
-
-    public static function detect(string $fileName): string
+    public function detectType(string $filePath): string
     {
-        if (!file_exists($fileName)) {
+        if (!file_exists($filePath) || is_dir($filePath)) {
             throw new RuntimeException();
         }
 
-        $fileInfo = new SplFileInfo($fileName);
+        $fileInfo = new SplFileInfo($filePath);
 
         switch ($fileInfo->getExtension()) {
             case 'yml':
             case 'yaml':
-                return self::FILETYPE_YAML;
+                return FileTypesEnum::TYPE_YAML;
             case 'json':
-                return self::FILETYPE_JSON;
+                return FileTypesEnum::TYPE_JSON;
             default:
                 throw new InvalidArgumentException('unexpected file type');
         }

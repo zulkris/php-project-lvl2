@@ -1,12 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace App\Domain;
 
 use function in_array;
 
 class DiffEvaluator
 {
+    private FileConverterInterface $fileConverter;
+
+    public function __construct(FileConverterInterface $fileConverter)
+    {
+        $this->fileConverter = $fileConverter;
+    }
+
     public function evaluateDiff(array $one, array $two): array
     {
         $allKeys = array_keys(array_merge($one, $two));

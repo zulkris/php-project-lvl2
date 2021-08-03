@@ -1,8 +1,10 @@
 #!/usr/bin/env php
 <?php
 
-use App\GenDiff;
-use App\DiffEvaluator;
+use App\Application\GenDiffCli;
+use App\Domain\DiffEvaluator;
+use App\Infrastructure\FileConverter;
+use App\Infrastructure\FileTypeDetector;
 use Docopt\Handler;
 use Pimple\Container;
 use Pimple\Psr11\Container as Psr11Container;
@@ -17,9 +19,12 @@ if (file_exists($autoloadPath1)) {
 }
 
 $container  = new Container();
-$container['handler'] = static fn() => new Handler();
-$container['evaluator'] = static fn() => new DiffEvaluator();
-$container['app']     = static fn($c) => new GenDiff($c['handler'], $c['evaluator']);
+$container['handler'] = new Handler();
+$container['diffEvaluator'] = new DiffEvaluator(new FileConverter(new FileTypeDetector()));
+$container['app']     = static fn($c) => new GenDiffCli(
+        $c['handler'],
+        $c['diffEvaluator']
+);
 $psr11container       = new Psr11Container($container);
 
 

@@ -1,17 +1,25 @@
 <?php
 declare(strict_types=1);
 
-use App\FileTypeDetector;
+use App\Infrastructure\FileTypeDetector;
+use App\Infrastructure\FileTypesEnum;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 
 class FileTypeDetectorTest extends TestCase
 {
+    private FileTypeDetector $fileTypeDetector;
+
+    protected function setUp(): void
+    {
+        $this->fileTypeDetector = new FileTypeDetector();
+    }
+
     /** @test */
     public function fileNotExistsThrowsError(): void
     {
         $this->expectException(RuntimeException::class);
-        FileTypeDetector::detect('randomFileName');
+        $this->fileTypeDetector->detectType('randomFileName');
     }
 
     /** @test */
@@ -21,7 +29,7 @@ class FileTypeDetectorTest extends TestCase
         $jsonFile = vfsStream::newFile('somefile.opa')->at($root);
 
         $this->expectException(InvalidArgumentException::class);
-        FileTypeDetector::detect($jsonFile->url());
+        $this->fileTypeDetector->detectType($jsonFile->url());
     }
 
     /** @test */
@@ -30,6 +38,6 @@ class FileTypeDetectorTest extends TestCase
         $root     = vfsStream::setup();
         $jsonFile = vfsStream::newFile('somefile.json')->at($root);
 
-        self::assertEquals(FileTypeDetector::FILETYPE_JSON, FileTypeDetector::detect($jsonFile->url()));
+        self::assertEquals(FileTypesEnum::TYPE_JSON, $this->fileTypeDetector->detectType($jsonFile->url()));
     }
 }

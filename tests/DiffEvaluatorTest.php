@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use App\DiffEvaluator;
+use App\Domain\DiffEvaluator;
 use PHPUnit\Framework\TestCase;
 
 class DiffEvaluatorTest extends TestCase
@@ -22,7 +22,7 @@ class DiffEvaluatorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->diffEvaluator = new DiffEvaluator();
+        $this->diffEvaluator = new DiffEvaluator(new \App\Infrastructure\FileConverter(new \App\Infrastructure\FileTypeDetector()));
     }
 
     /** @test */
@@ -38,6 +38,7 @@ class DiffEvaluatorTest extends TestCase
                 ['type' => 'same', 'item' => 'заяц', 'value' => 'зверь'],
                 ['type' => 'plus', 'item' => 'игуана', 'value' => 'вкусная'],
             ],
-            $res);
+            $res
+        );
     }
 }
